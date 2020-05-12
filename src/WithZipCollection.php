@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Cblink\ExcelZip;
+namespace Devlover\ExcelZip;
 
 
-trait CustomCollection
+trait WithZipCollection
 {
 
     protected $collection;

@@ -1,13 +1,14 @@
 <?php
 
 
-namespace Cblink\ExcelZip;
+namespace Devlover\ExcelZip;
 
 
 use Carbon\Carbon;
-use Chumper\Zipper\Zipper;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Excel;
+use ZipArchive;
+use File;
 
 class ExcelZip
 {
@@ -43,7 +44,7 @@ class ExcelZip
     public function __construct(Excel $excel)
     {
         $this->excel = $excel;
-        $this->folder = 'member_'.str_random(6);
+        $this->folder = 'excel_' . str_random(6);
     }
 
     /**
@@ -72,7 +73,7 @@ class ExcelZip
     public function excel(Collection $collection, string $fileName = null, $export = null)
     {
         $this->export = $export ?: $this->export;
-        $fileName = $fileName ? $fileName.'_'.$this->counter : $this->counter;
+        $fileName = $fileName ? $fileName . '_' . $this->counter : $this->counter;
 
         $this->excel->store($this->export->setCollection($collection), "{$this->folder}/$fileName.xlsx");
 
@@ -91,12 +92,12 @@ class ExcelZip
     {
         $this->generateZip();
 
-        return $this->response(storage_path($this->folder.'.zip'));
+        return $this->response(storage_path($this->folder . '.zip'));
     }
 
     /**
      * @param Collection $collection
-     * @param CustomCollection $export
+     * @param WithZipCollection $export
      * @param string $fileName
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      * @throws \PhpOffice\PhpSpreadsheet\Exception
@@ -108,7 +109,7 @@ class ExcelZip
         $chunk = config('excel_zip.chunk', 5000);
 
         if (!config('excel_zip.always_zip', false) && $collection->count() < $chunk) {
-            return $this->excel->download($export->setCollection($collection), $fileName.'.xlsx')->deleteFileAfterSend(true);
+            return $this->excel->download($export->setCollection($collection), $fileName . '.xlsx')->deleteFileAfterSend(true);
         }
 
         foreach ($collection->chunk($chunk) as $key => $members) {
@@ -125,11 +126,25 @@ class ExcelZip
      */
     private function generateZip()
     {
-        $zipper = new Zipper();
+        $zip = new ZipArchive();
 
-        $zipper->make(storage_path("{$this->folder}.zip"))->add(glob(storage_path("app/{$this->folder}").'/*'))->close();
+        /*$zipper->make(storage_path("{$this->folder}.zip"))
+            ->add(glob(storage_path("app/{$this->folder}") . '/*'))
+            ->close();*/
+
+        if ($zip->open(storage_path("{$this->folder}.zip"), ZipArchive::CREATE) === TRUE) {
+            $files = File::files(storage_path("app/{$this->folder}"));
+
+            foreach ($files as $key => $value) {
+                $relativeNameInZipFile = basename($value);
+                $zip->addFile($value, $relativeNameInZipFile);
+            }
+
+            $zip->close();
+        }
 
         dispatch(new RemoveZip($this->folder))->delay(Carbon::now()->addMinute());
+
     }
 
     /**

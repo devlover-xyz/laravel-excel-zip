@@ -1,17 +1,19 @@
+#NOTE
+This is a very early stage package that aims to become a successor of laravel-excel-zip package. It started as a fork because we needed Laravel 6.0 compatibility. I will try to make it compatible with Laravel 6 and up.
+
 # laravel-excel-zip
 download excels wrap in zip
-
 laravel-excel-zip is a solution to download a large excel. You can define when to chunk excels into a zip file.
 
 ## Install
 
-`composer require cblink/laravel-excel-zip -vvv`
+`composer require Devlover/laravel-excel-zip -vvv`
 
 ## Usage
 
 run command to create `config/excel_zip.php`
 
-`php artisan vendor:publish --provider="Cblink\ExcelZip\ExcelZipServiceProvider"`
+`php artisan vendor:publish --provider="Devlover\ExcelZip\ExcelZipServiceProvider"`
 
 ### Export
 
@@ -20,12 +22,12 @@ use CustomCollection in your `Export` and ***Don't define `collection` function*
 ```php
 <?php
 
-use Cblink\ExcelZip\CustomCollection;
+use Devlover\ExcelZip\WithZipCollection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
 class MemberExport implements FromCollection
 {
-    use CustomCollection;
+    use WithZipCollection;
 }
 ```
 
@@ -34,7 +36,7 @@ class MemberExport implements FromCollection
 ```php
 <?php
 
-use Cblink\ExcelZip\ExcelZip;
+use Devlover\ExcelZip\ExcelZip;
 use App\Http\Controllers\Controller;
 
 class MemberController extends Controller

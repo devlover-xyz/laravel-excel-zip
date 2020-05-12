@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Cblink\ExcelZip;
+namespace Devlover\ExcelZip;
 
 
 use Illuminate\Bus\Queueable;
