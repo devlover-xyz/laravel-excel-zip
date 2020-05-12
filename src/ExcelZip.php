@@ -60,6 +60,10 @@ class ExcelZip
         return $this;
     }
 
+    public function setFoldername($foldername)
+    {
+        $this->folder = $foldername;
+    }
     /**
      * store a excel file
      *
