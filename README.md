@@ -7,7 +7,7 @@ laravel-excel-zip is a solution to download a large excel. You can define when t
 
 ## Install
 
-`composer require Devlover/laravel-excel-zip -vvv`
+`composer require devlover/laravel-excel-zip -vvv`
 
 ## Usage
 
